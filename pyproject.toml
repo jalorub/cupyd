@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data_etl"
+version = '0.1.0'
 authors = [
     {name = "Francisco Javier Alonso Rubio", email = "fjalorub@gmail.com"},
 ]
@@ -12,11 +13,8 @@ readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["data", "etl", "python", "parallelism"]
 license = {text = "MIT"}
-classifiers = [
-    "Programming Language :: Python :: 3",
-]
+classifiers = ["Programming Language :: Python :: 3", ]
 dependencies = []
-dynamic = ["version"]
 
 [tool.setuptools.packages.find]
 include = ["data_etl*"]
