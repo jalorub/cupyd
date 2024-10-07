@@ -106,19 +106,13 @@ class ETLWorker:
                 exception_by_node_id[node_id] = exception
 
         # notify the main process thread this ETLWorker has finished
-        self.finished_workers.put(
-            (self.worker_id, self.segment_id, exception_by_node_id)
-        )
+        self.finished_workers.put((self.worker_id, self.segment_id, exception_by_node_id))
 
     @staticmethod
     def _get_node_worker_class(node: Node) -> Type[NodeWorker]:
         if isinstance(node, Extractor):
             return ExtractorWorker
-        elif (
-            isinstance(node, Transformer)
-            or isinstance(node, Filter)
-            or isinstance(node, Loader)
-        ):
+        elif isinstance(node, Transformer) or isinstance(node, Filter) or isinstance(node, Loader):
             return ProcessorWorker
         elif isinstance(node, Bulker):
             return BulkerWorker

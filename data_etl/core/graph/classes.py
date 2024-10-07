@@ -38,9 +38,7 @@ class Node(_Connectable):
         else:
             # build a snake_case representation out of the CamelCase class name
             class_name = self.__class__.__name__
-            tokens = [
-                str(token).lower() for token in NODE_NAME_REGEX.findall(class_name)
-            ]
+            tokens = [str(token).lower() for token in NODE_NAME_REGEX.findall(class_name)]
             return "_".join(tokens)
 
     @final
@@ -48,9 +46,7 @@ class Node(_Connectable):
         return str(self)
 
     @final
-    def __rshift__(
-        self, target: Union[_Connectable, Iterable[_Connectable]]
-    ) -> SubGraph:
+    def __rshift__(self, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
         return _NodeConnector.connect(origin=self, target=target)
 
     def start(self):
@@ -155,9 +151,7 @@ class SubGraph(_Connectable):
         self.root_node = root_node
         self.leaf_nodes = tuple(node for node in leaf_nodes) if leaf_nodes else ()
 
-    def __rshift__(
-        self, target: Union[_Connectable, Iterable[_Connectable]]
-    ) -> SubGraph:
+    def __rshift__(self, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
         origin = self.leaf_nodes or self.root_node
 
         if isinstance(origin, tuple):
@@ -176,9 +170,7 @@ class SubGraph(_Connectable):
 class _NodeConnector:
 
     @classmethod
-    def connect(
-        cls, origin: Node, target: Union[_Connectable, Iterable[_Connectable]]
-    ) -> SubGraph:
+    def connect(cls, origin: Node, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
         """Connect a list of Nodes to one of the following Connectable:
 
         a) Another Node.
@@ -217,9 +209,7 @@ class _NodeConnector:
                     else:
                         target_leaf_nodes.append(d.root_node)
                 else:
-                    raise TypeError(
-                        f"Cannot connect to a {type(target)} target object."
-                    )
+                    raise TypeError(f"Cannot connect to a {type(target)} target object.")
         elif isinstance(target, Node):
             target_root_nodes = [target]
             target_leaf_nodes = [target]
@@ -245,9 +235,7 @@ class _NodeConnector:
             raise CyclicNodeError(f"Cannot connect a Node with itself: {origin}")
 
         if any(node == target for node in origin.outputs):
-            raise NodesAlreadyConnectedError(
-                f"Node {origin} already connected to {target}"
-            )
+            raise NodesAlreadyConnectedError(f"Node {origin} already connected to {target}")
 
         target.input = origin
         origin.outputs.append(target)
