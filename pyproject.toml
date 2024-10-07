@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data_etl"
+authors = [
+    {name = "Francisco Javier Alonso Rubio", email = "fjalorub@gmail.com"},
+]
+description = "Python-only framework to easily build ETLs."
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["data", "etl", "python", "parallelism"]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = []
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+include = ["data_etl*"]
+exclude = ["tests*"]
+
+[project.optional-dependencies]
+api = []
+full = []
+#rest = ["docutils>=0.3", "pack ==1.1, ==1.3"]
+#
+#[project.scripts]
+#my-script = "my_package.module:function"
+
+# ... other project metadata fields as specified in:
+#     https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
