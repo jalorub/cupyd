@@ -13,3 +13,9 @@ Key features:
     - The API version will require [Falcon](https://falcon.readthedocs.io/en/stable/index.html),
       which is a minimalist ASGI/WSGI framework that doesn't require other packages to work.
     - The Dashboard version (full version) will require Falcon and [Dash](https://dash.plotly.com/).
+
+## How to use
+
+(_**Under construction**_)
+
+For more information, go the [examples](data_etl/examples) directory
