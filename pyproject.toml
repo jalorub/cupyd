@@ -13,7 +13,11 @@ readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["data", "etl", "python", "parallelism"]
 license = {text = "MIT"}
-classifiers = ["Programming Language :: Python :: 3", ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 dependencies = []
 
 [tool.setuptools.packages.find]
@@ -23,10 +27,3 @@ exclude = ["tests*"]
 [project.optional-dependencies]
 api = []
 full = []
-#rest = ["docutils>=0.3", "pack ==1.1, ==1.3"]
-#
-#[project.scripts]
-#my-script = "my_package.module:function"
-
-# ... other project metadata fields as specified in:
-#     https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
