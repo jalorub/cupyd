@@ -3,7 +3,7 @@ from multiprocessing import RawValue, Lock
 
 class MPCounter:
     def __init__(self):
-        self._value = RawValue('i', 0)
+        self._value = RawValue("i", 0)
         self._lock = Lock()
 
     def increase(self, amount: int):

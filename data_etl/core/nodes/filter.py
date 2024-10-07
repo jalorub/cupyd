@@ -16,7 +16,7 @@ class Filter(Node):
     def filter(self, item: Any) -> Any:
         """Filter an incoming item (Python object)."""
 
-        raise NotImplementedError('Missing implementation of filter() method!')
+        raise NotImplementedError("Missing implementation of filter() method!")
 
     @final
     @property

@@ -6,10 +6,18 @@ from threading import Thread
 from typing import List, Dict, Type
 
 from data_etl.core.communication import (
-    Connector, InterProcessEventFlag, IntraProcessConnector, MPCounter, InterruptionHandler,
+    Connector,
+    InterProcessEventFlag,
+    IntraProcessConnector,
+    MPCounter,
+    InterruptionHandler,
 )
 from data_etl.core.computing.node_worker import (
-    NodeWorker, ExtractorWorker, ProcessorWorker, DeBulkerWorker, BulkerWorker,
+    NodeWorker,
+    ExtractorWorker,
+    ProcessorWorker,
+    DeBulkerWorker,
+    BulkerWorker,
 )
 from data_etl.core.constants.logging import LOGGING_FORMAT
 from data_etl.core.constants.sentinel_values import NO_MORE_ITEMS
@@ -98,20 +106,26 @@ class ETLWorker:
                 exception_by_node_id[node_id] = exception
 
         # notify the main process thread this ETLWorker has finished
-        self.finished_workers.put((self.worker_id, self.segment_id, exception_by_node_id))
+        self.finished_workers.put(
+            (self.worker_id, self.segment_id, exception_by_node_id)
+        )
 
     @staticmethod
     def _get_node_worker_class(node: Node) -> Type[NodeWorker]:
         if isinstance(node, Extractor):
             return ExtractorWorker
-        elif isinstance(node, Transformer) or isinstance(node, Filter) or isinstance(node, Loader):
+        elif (
+            isinstance(node, Transformer)
+            or isinstance(node, Filter)
+            or isinstance(node, Loader)
+        ):
             return ProcessorWorker
         elif isinstance(node, Bulker):
             return BulkerWorker
         elif isinstance(node, DeBulker):
             return DeBulkerWorker
         else:
-            raise TypeError(f'Invalid node type: {type(node)}')
+            raise TypeError(f"Invalid node type: {type(node)}")
 
 
 class ETLWorkerThread(ETLWorker, Thread):

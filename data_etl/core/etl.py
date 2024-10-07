@@ -11,7 +11,10 @@ from data_etl.core.communication.connector import (
     InterProcessConnector,
 )
 from data_etl.core.communication.counter import MPCounter
-from data_etl.core.communication.event_flag import InterProcessEventFlag, IntraProcessEventFlag
+from data_etl.core.communication.event_flag import (
+    InterProcessEventFlag,
+    IntraProcessEventFlag,
+)
 from data_etl.core.communication.interruption_handler import InterruptionHandler
 from data_etl.core.computing.etl_worker import ETLWorkerProcess, ETLWorkerThread
 from data_etl.core.constants.logging import LOGGING_FORMAT
@@ -31,14 +34,14 @@ from data_etl.core.stats.progress_thread import ProgressThread
 from data_etl.core.stats.timings_thread import TimingsThread
 from data_etl.core.utils import format_seconds, get_subdict
 
-logger = logging.getLogger('data_etl.etl')
+logger = logging.getLogger("data_etl.etl")
 
 
 class ETL:
 
     def __init__(self, extractor: Extractor):
         if not isinstance(extractor, Extractor):
-            raise TypeError(f'Invalid Extractor: {type(extractor)}')
+            raise TypeError(f"Invalid Extractor: {type(extractor)}")
         self.extractor = extractor
 
     def run(
@@ -51,7 +54,7 @@ class ETL:
         verbose: bool = True,
     ):
         start_method = get_start_method()
-        set_start_method('spawn', force=True)  # ETLWorkerProcesses will be spawned
+        set_start_method("spawn", force=True)  # ETLWorkerProcesses will be spawned
 
         current_formatter, current_level, current_logfile = self._setup_logger()
 
@@ -68,7 +71,7 @@ class ETL:
         ) = self._build(num_workers=workers, monitor_performance=monitor_performance)
 
         if verbose:
-            logger.info('ETL build successful, running ETL...')
+            logger.info("ETL build successful, running ETL...")
 
         start_time = time()
         exceptions_by_node_id: Dict[str, List[NodeException]] = defaultdict(list)
@@ -106,12 +109,14 @@ class ETL:
         workers_by_id = {}
 
         for segment_id, segment in segments_by_id.items():
-            active_worker_ids_by_segment_id[segment_id] = set(segment.workers_by_id.keys())
+            active_worker_ids_by_segment_id[segment_id] = set(
+                segment.workers_by_id.keys()
+            )
 
             for worker_id, worker in segment.workers_by_id.items():
                 workers_by_id[worker_id] = worker
 
-        logger.info(f'ETL startup time: {round(time() - start_time, 4)} seconds')
+        logger.info(f"ETL startup time: {round(time() - start_time, 4)} seconds")
 
         # run until all ETLSegments are finished
         while active_worker_ids_by_segment_id:
@@ -129,9 +134,9 @@ class ETL:
                 if not active_worker_ids_by_segment_id[segment_id]:
                     active_worker_ids_by_segment_id.pop(segment_id)
 
-                    for output_segment_num_workers, connector in (
-                        segments_by_id[segment_id].output_interprocess_connectors
-                    ):
+                    for output_segment_num_workers, connector in segments_by_id[
+                        segment_id
+                    ].output_interprocess_connectors:
                         for _ in range(output_segment_num_workers):
                             connector.produce(NO_MORE_ITEMS)
             except InterruptedError:
@@ -163,16 +168,16 @@ class ETL:
             failed_nodes_names.sort()
             logger.error(
                 f'ETL finished with errors in nodes: {", ".join(failed_nodes_names)} | '
-                f'Elapsed time: {elapsed_time}'
+                f"Elapsed time: {elapsed_time}"
             )
         else:
             if interruption_handler.interrupted():
                 if raise_exception_if_interrupted:
-                    raise InterruptedETL(f'Elapsed time: {elapsed_time}')
+                    raise InterruptedETL(f"Elapsed time: {elapsed_time}")
                 else:
-                    logger.warning(f'ETL interrupted! | {elapsed_time}')
+                    logger.warning(f"ETL interrupted! | {elapsed_time}")
             else:
-                logger.info(f'ETL finished | Elapsed time: {elapsed_time}')
+                logger.info(f"ETL finished | Elapsed time: {elapsed_time}")
 
         self._reset_root_logging(
             current_level=current_level,
@@ -238,18 +243,23 @@ class ETL:
         pause_event = InterProcessEventFlag()
         interruption_handler = InterruptionHandler(stop_event=stop_event)
         counter_by_node_id: Dict[str, MPCounter] = {
-            node.id: MPCounter() for node in nodes if isinstance(node, Loader) and not node.outputs
+            node.id: MPCounter()
+            for node in nodes
+            if isinstance(node, Loader) and not node.outputs
         }
         monitor_performance_event_by_node_id = {
-            node.id: InterProcessEventFlag(start_set=monitor_performance) for node in nodes
+            node.id: InterProcessEventFlag(start_set=monitor_performance)
+            for node in nodes
         }
         segments_by_id: Dict[str, ETLSegment] = {}
 
         for segment in segments:
-            worker_class = ETLWorkerThread if segment.run_in_main_process else ETLWorkerProcess
+            worker_class = (
+                ETLWorkerThread if segment.run_in_main_process else ETLWorkerProcess
+            )
 
             for _ in range(segment.num_workers):
-                etl_worker_id = f'etl_worker_{worker_num}'
+                etl_worker_id = f"etl_worker_{worker_num}"
 
                 etl_worker = worker_class(
                     worker_id=etl_worker_id,
@@ -265,7 +275,8 @@ class ETL:
                         dictionary=output_connectors_by_node_id, keys=segment.node_ids
                     ),
                     monitor_performance_event_by_node_id=get_subdict(
-                        dictionary=monitor_performance_event_by_node_id, keys=segment.node_ids
+                        dictionary=monitor_performance_event_by_node_id,
+                        keys=segment.node_ids,
                     ),
                     stop_event=stop_event,
                     pause_event=pause_event,
@@ -297,7 +308,7 @@ class ETL:
         try:
             current_formatter = deepcopy(logging.root.handlers[0].formatter)
         except TypeError:
-            logger.warning('Unable to get current logger')
+            logger.warning("Unable to get current logger")
             return None, None, None
 
         current_level = logging.root.level

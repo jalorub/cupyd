@@ -5,7 +5,7 @@ from multiprocessing import Lock, Value
 
 from data_etl.core.communication.event_flag import InterProcessEventFlag
 
-logger = logging.getLogger('data_etl.interrupt')
+logger = logging.getLogger("data_etl.interrupt")
 
 
 class InterruptionHandler:
@@ -34,7 +34,7 @@ class InterruptionHandler:
         with self._lock:
             interrupted = self._interrupted.value
             if not interrupted:
-                logger.warning('Interruption signal detected, stopping the ETL...')
+                logger.warning("Interruption signal detected, stopping the ETL...")
                 self._interrupted.value = True
                 if not self._stop_event:
                     self._stop_event.set()

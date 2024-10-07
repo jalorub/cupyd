@@ -10,6 +10,7 @@ from data_etl.core.nodes import Extractor, Transformer, Loader, Filter, Bulker, 
 
 # PUBLIC FUNCTIONS
 
+
 def topological_sort(root_node: Node) -> Tuple[List[Node], List[Edge]]:
     nodes = []
     edges = []
@@ -28,7 +29,7 @@ def assign_names_and_ids_to_nodes(nodes: List[Node]) -> None:
     last_num_per_class = defaultdict(int)
 
     for node in nodes:
-        node.id = f'node_{node_id}'
+        node.id = f"node_{node_id}"
         node_id += 1
 
         if node.name is None:
@@ -39,17 +40,19 @@ def assign_names_and_ids_to_nodes(nodes: List[Node]) -> None:
         if node.name is None:
             class_name = str(node)
             last_num_per_class[class_name] += 1
-            if num_nodes_per_class[class_name] == 1:  # single Node from that class without name
+            if (
+                num_nodes_per_class[class_name] == 1
+            ):  # single Node from that class without name
                 node.name = class_name
             else:
-                node.name = f'{class_name}_{last_num_per_class[class_name]}'
+                node.name = f"{class_name}_{last_num_per_class[class_name]}"
 
 
 def get_etl_segments(nodes: List[Node], num_workers: int) -> List[ETLSegment]:
     segments = []
     segment_num = 1
 
-    for group in _split_nodes_by_attr(nodes=nodes, attr_name='run_in_main_process'):
+    for group in _split_nodes_by_attr(nodes=nodes, attr_name="run_in_main_process"):
         for group_ in _split_nodes_if_not_consecutive(nodes=group):
             run_in_main_process = group_[0].configuration.run_in_main_process
 
@@ -60,7 +63,7 @@ def get_etl_segments(nodes: List[Node], num_workers: int) -> List[ETLSegment]:
 
             segments.append(
                 ETLSegment(
-                    id=f'segment_{segment_num}',
+                    id=f"segment_{segment_num}",
                     nodes=group_,
                     node_ids={node.id for node in group_},
                     num_workers=segment_num_workers,
@@ -74,6 +77,7 @@ def get_etl_segments(nodes: List[Node], num_workers: int) -> List[ETLSegment]:
 
 # PROTECTED FUNCTIONS
 
+
 def _downstream_discovery(
     node: Node, nodes: List[Node], edges: List[Edge]
 ) -> Tuple[List[Node], List[Edge]]:
@@ -84,7 +88,9 @@ def _downstream_discovery(
     if not edges:
         edges = []
 
-    if node not in nodes:  # avoid storing duplicate Nodes when at least 2 branches are connected
+    if (
+        node not in nodes
+    ):  # avoid storing duplicate Nodes when at least 2 branches are connected
         nodes.append(node)
 
     for descendant in node.outputs:
@@ -102,9 +108,10 @@ def _split_nodes_by_attr(nodes: List[Node], attr_name: str) -> List[List[Node]]:
     """This function will split Nodes based on equality of a selected Node attribute."""
 
     groups = [
-        list(g) for _, g in groupby(
+        list(g)
+        for _, g in groupby(
             sorted(nodes, key=lambda x: _get_node_attr(x, attr_name)),
-            key=lambda x: _get_node_attr(x, attr_name)
+            key=lambda x: _get_node_attr(x, attr_name),
         )
     ]
     return groups
@@ -117,7 +124,9 @@ def _get_ascendants(
         ascendants = []
 
     if node.input:
-        if (valid_nodes_ids and node.input.id in valid_nodes_ids) or not valid_nodes_ids:
+        if (
+            valid_nodes_ids and node.input.id in valid_nodes_ids
+        ) or not valid_nodes_ids:
             ascendants.append(node.input)
             ascendants.extend(_get_ascendants(node=node.input, ascendants=ascendants))
 
@@ -131,9 +140,13 @@ def _get_descendants(
         descendants = []
 
     for output_node in node.outputs:
-        if (valid_nodes_ids and output_node.id in valid_nodes_ids) or not valid_nodes_ids:
+        if (
+            valid_nodes_ids and output_node.id in valid_nodes_ids
+        ) or not valid_nodes_ids:
             descendants.append(output_node)
-            descendants.extend(_get_descendants(node=output_node, descendants=descendants))
+            descendants.extend(
+                _get_descendants(node=output_node, descendants=descendants)
+            )
 
     return descendants
 
@@ -149,7 +162,9 @@ def _split_nodes_if_not_consecutive(nodes: List[Node]) -> List[List[Node]]:
             if ascendant.id in node_ids_to_check:
                 connected_nodes_by_id[node.id].add(ascendant.id)
 
-        for descendant in _get_descendants(node=node, valid_nodes_ids=node_ids_to_check):
+        for descendant in _get_descendants(
+            node=node, valid_nodes_ids=node_ids_to_check
+        ):
             if descendant.id in node_ids_to_check:
                 connected_nodes_by_id[node.id].add(descendant.id)
 
@@ -182,7 +197,10 @@ def _split_nodes_if_not_consecutive(nodes: List[Node]) -> List[List[Node]]:
         if num_nodes > 1:
             for idx in range(num_nodes):
                 node = group[idx]
-                if isinstance(node, Extractor) and not node.configuration.run_in_main_process:
+                if (
+                    isinstance(node, Extractor)
+                    and not node.configuration.run_in_main_process
+                ):
                     group.pop(idx)
                     groups.append([node])
                     return groups

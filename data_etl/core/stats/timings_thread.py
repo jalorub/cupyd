@@ -12,7 +12,7 @@ from data_etl.core.constants.logging import LOGGING_MSG_PADDING
 from data_etl.core.constants.sentinel_values import NO_MORE_ITEMS
 from data_etl.core.graph.classes import Node
 
-logger = logging.getLogger('data_etl.timings')
+logger = logging.getLogger("data_etl.timings")
 
 
 class TimingsThread(Thread):
@@ -24,13 +24,13 @@ class TimingsThread(Thread):
         stop_event: InterProcessEventFlag,
         refresh_interval: int = 5,  # seconds
     ):
-        super().__init__(name='data_etl')
+        super().__init__(name="data_etl")
         self.node_timings = node_timings
         self.stop_event = stop_event
         self.refresh_interval = refresh_interval
         self.node_name_by_id = {node.id: node.name for node in nodes}
         self.stats_by_node_id = {
-            node.id: {'min': None, 'max': None, 'median': None} for node in nodes
+            node.id: {"min": None, "max": None, "median": None} for node in nodes
         }
         self.buffer_by_node_id = {node.id: deque(maxlen=100) for node in nodes}
 
@@ -63,29 +63,29 @@ class TimingsThread(Thread):
     def _update_timings(self):
         for node_id, timings in self.buffer_by_node_id.items():
             if timings:
-                self.stats_by_node_id[node_id]['median'] = median(timings)
+                self.stats_by_node_id[node_id]["median"] = median(timings)
 
-                if self.stats_by_node_id[node_id]['min']:
-                    current_min = [self.stats_by_node_id[node_id]['min']]
-                    current_max = [self.stats_by_node_id[node_id]['max']]
+                if self.stats_by_node_id[node_id]["min"]:
+                    current_min = [self.stats_by_node_id[node_id]["min"]]
+                    current_max = [self.stats_by_node_id[node_id]["max"]]
                 else:
                     current_min = []
                     current_max = []
 
-                self.stats_by_node_id[node_id]['min'] = min(chain(timings, current_min))
-                self.stats_by_node_id[node_id]['max'] = max(chain(timings, current_max))
+                self.stats_by_node_id[node_id]["min"] = min(chain(timings, current_min))
+                self.stats_by_node_id[node_id]["max"] = max(chain(timings, current_max))
 
     def _log_timings(self):
-        log = 'timings:\n'
+        log = "timings:\n"
         for node_id, stats in self.stats_by_node_id.items():
-            min_timing = self._format_timing(stats['min'])
-            max_timing = self._format_timing(stats['max'])
-            median_timing = self._format_timing(stats['median'])
+            min_timing = self._format_timing(stats["min"])
+            max_timing = self._format_timing(stats["max"])
+            median_timing = self._format_timing(stats["median"])
 
             log += (
-                f'{LOGGING_MSG_PADDING}\t• {self.node_name_by_id[node_id]}\n'
-                f'{LOGGING_MSG_PADDING}\t\t'
-                f'{median_timing} (avg) | {min_timing} (min) | {max_timing} (max)\n'
+                f"{LOGGING_MSG_PADDING}\t• {self.node_name_by_id[node_id]}\n"
+                f"{LOGGING_MSG_PADDING}\t\t"
+                f"{median_timing} (avg) | {min_timing} (min) | {max_timing} (max)\n"
             )
 
         logger.info(log)
@@ -93,19 +93,19 @@ class TimingsThread(Thread):
     @staticmethod
     def _format_timing(value: Optional[float]) -> str:
         if value is None:
-            return 'no_measure'
+            return "no_measure"
 
         if 1 <= value < 60:
-            return f'{round(value, 2)} s'
+            return f"{round(value, 2)} s"
         elif value < 1:
             ms_value = value * 1000
             if ms_value < 1:
-                return f'{round(ms_value * 1000, 4)} μs'
+                return f"{round(ms_value * 1000, 4)} μs"
             else:
-                return f'{round(ms_value, 4)} ms'
+                return f"{round(ms_value, 4)} ms"
         else:
             minutes_value = value / 60
             if minutes_value <= 1:
-                return f'{round(minutes_value, 2)} min'
+                return f"{round(minutes_value, 2)} min"
             else:
-                return f'{round(minutes_value / 60, 4)} hours'
+                return f"{round(minutes_value / 60, 4)} hours"

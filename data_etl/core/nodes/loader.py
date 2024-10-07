@@ -16,7 +16,7 @@ class Loader(Node):
     def load(self, item: Any):
         """Load an incoming item (Python object)."""
 
-        raise NotImplementedError('Missing implementation of load() method!')
+        raise NotImplementedError("Missing implementation of load() method!")
 
     @final
     @property
