@@ -16,7 +16,7 @@ class Transformer(Node):
     def transform(self, item: Any) -> Any:
         """Transform an incoming item (Python object)."""
 
-        raise NotImplementedError('Missing implementation of transform() method!')
+        raise NotImplementedError("Missing implementation of transform() method!")
 
     @final
     @property

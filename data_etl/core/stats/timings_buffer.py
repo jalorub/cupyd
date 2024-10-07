@@ -9,7 +9,7 @@ class TimingsBuffer:
         super().__init__()
         self._maxsize = maxsize
         self._queue = SimpleQueue()
-        self._buffer_size = Value('i', 0)
+        self._buffer_size = Value("i", 0)
 
     def produce_timing(self, timing: float):
         with self._buffer_size.get_lock():

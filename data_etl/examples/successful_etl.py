@@ -4,7 +4,7 @@ from typing import Iterator, Any, Optional
 from data_etl.core.etl import ETL
 from data_etl.core.nodes import Extractor, Transformer, Filter, Loader
 
-logger = logging.getLogger('my_logger')
+logger = logging.getLogger("my_logger")
 
 
 class IntExtractor(Extractor):
@@ -15,7 +15,7 @@ class IntExtractor(Extractor):
         self.n = n
 
     def start(self):
-        logger.info('Extractor started!')
+        logger.info("Extractor started!")
 
     def extract(self) -> Iterator[int]:
         for value in range(self.n):
@@ -31,14 +31,14 @@ class Adder(Transformer):
         return value + 1
 
     def finalize(self):
-        logger.info(f'Adder finalized!')
+        logger.info(f"Adder finalized!")
 
 
 class Multiplier(Transformer):
     """Multiply a given value by 1."""
 
     def start(self):
-        logger.info('Multiplier started!')
+        logger.info("Multiplier started!")
 
     def transform(self, value: int) -> int:
         return value * 1
@@ -102,11 +102,13 @@ def run_etl():
         verbose=False,
     )
 
-    logger.info(f'Total items in ldr_a {len(ldr_a.items)} | total items ldr_b {len(ldr_b.items)}')
+    logger.info(
+        f"Total items in ldr_a {len(ldr_a.items)} | total items ldr_b {len(ldr_b.items)}"
+    )
 
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
-    logging.info('Starting my script...')
+    logging.info("Starting my script...")
     run_etl()
-    logging.info('Exiting my script')
+    logging.info("Exiting my script")

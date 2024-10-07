@@ -16,7 +16,7 @@ class Extractor(Node):
     def extract(self) -> Iterator[Any]:
         """Extract an item."""
 
-        raise NotImplementedError('Missing implementation of extract() method!')
+        raise NotImplementedError("Missing implementation of extract() method!")
 
     @final
     @property

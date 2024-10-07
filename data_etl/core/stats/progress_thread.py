@@ -4,11 +4,14 @@ from time import sleep
 from typing import List, Dict
 
 from data_etl.core.communication.counter import MPCounter
-from data_etl.core.communication.event_flag import IntraProcessEventFlag, InterProcessEventFlag
+from data_etl.core.communication.event_flag import (
+    IntraProcessEventFlag,
+    InterProcessEventFlag,
+)
 from data_etl.core.constants.logging import LOGGING_MSG_PADDING
 from data_etl.core.graph.classes import Node
 
-logger = logging.getLogger('data_etl.progress')
+logger = logging.getLogger("data_etl.progress")
 
 
 class ProgressThread(Thread):
@@ -21,7 +24,7 @@ class ProgressThread(Thread):
         stop_event: InterProcessEventFlag,
         refresh_interval: float = 2.5,  # seconds
     ):
-        super().__init__(name='data_etl (progress)')
+        super().__init__(name="data_etl (progress)")
         self.finalize_event = finalize_event
         self.stop_event = stop_event
         self.refresh_interval = refresh_interval
@@ -52,11 +55,11 @@ class ProgressThread(Thread):
 
     def _log_progress(self, last_log: bool = False):
         if last_log:
-            log = '[FINISHED] progress:\n'
+            log = "[FINISHED] progress:\n"
         else:
-            log = 'progress:\n'
+            log = "progress:\n"
 
         for node_name, counter in self.counter_by_node_name.items():
-            total_items = f'{counter.value:,}'
-            log += f'{LOGGING_MSG_PADDING}\t• {node_name}: {total_items}\n'
+            total_items = f"{counter.value:,}"
+            log += f"{LOGGING_MSG_PADDING}\t• {node_name}: {total_items}\n"
         logger.info(log)

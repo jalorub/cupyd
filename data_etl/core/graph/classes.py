@@ -5,13 +5,15 @@ from re import compile as re_compile
 from typing import List, Union, Tuple, Iterable, Any, final, Optional
 
 from data_etl.core.exceptions import (
-    CyclicNodeError, NodesAlreadyConnectedError, NodesConnectionError
+    CyclicNodeError,
+    NodesAlreadyConnectedError,
+    NodesConnectionError,
 )
 from data_etl.core.models.node_exception import NodeException
 
-__all__ = ['Node', 'Edge', 'SubGraph']
+__all__ = ["Node", "Edge", "SubGraph"]
 
-NODE_NAME_REGEX = re_compile(r'[A-Z]?[a-z]+|[A-Z]{2,}(?=[A-Z][a-z]|\d|\W|$)|\d+')
+NODE_NAME_REGEX = re_compile(r"[A-Z]?[a-z]+|[A-Z]{2,}(?=[A-Z][a-z]|\d|\W|$)|\d+")
 
 
 class _Connectable:
@@ -36,15 +38,19 @@ class Node(_Connectable):
         else:
             # build a snake_case representation out of the CamelCase class name
             class_name = self.__class__.__name__
-            tokens = [str(token).lower() for token in NODE_NAME_REGEX.findall(class_name)]
-            return '_'.join(tokens)
+            tokens = [
+                str(token).lower() for token in NODE_NAME_REGEX.findall(class_name)
+            ]
+            return "_".join(tokens)
 
     @final
     def __repr__(self) -> str:
         return str(self)
 
     @final
-    def __rshift__(self, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
+    def __rshift__(
+        self, target: Union[_Connectable, Iterable[_Connectable]]
+    ) -> SubGraph:
         return _NodeConnector.connect(origin=self, target=target)
 
     def start(self):
@@ -81,14 +87,14 @@ class Node(_Connectable):
     @input.setter
     def input(self, node: Node):
         if not isinstance(node, Node):
-            raise TypeError(f'Unable to set input node with {node}')
+            raise TypeError(f"Unable to set input node with {node}")
         if self._input:
             raise NodesConnectionError(
-                'Node input was already set. Please, for safety, create a new Node instance '
-                'instead of re-using an old one'
+                "Node input was already set. Please, for safety, create a new Node instance "
+                "instead of re-using an old one"
             )
         if node == self:
-            raise CyclicNodeError('Unable to connect Node with itself!')
+            raise CyclicNodeError("Unable to connect Node with itself!")
         self._input = node
 
     @property
@@ -127,7 +133,7 @@ class Edge:
             return (self.origin == other.origin) and (self.target == other.target)
 
     def __str__(self) -> str:
-        return f'{self.origin} ⇒ {self.target}'
+        return f"{self.origin} ⇒ {self.target}"
 
     def __repr__(self) -> str:
         return str(self)
@@ -144,18 +150,20 @@ class SubGraph(_Connectable):
 
     def __init__(self, root_node: Node, leaf_nodes: Iterable[Node] = None):
         if not root_node:
-            raise ValueError('Cannot initialize a SubGraph without a root Node!')
+            raise ValueError("Cannot initialize a SubGraph without a root Node!")
 
         self.root_node = root_node
         self.leaf_nodes = tuple(node for node in leaf_nodes) if leaf_nodes else ()
 
-    def __rshift__(self, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
+    def __rshift__(
+        self, target: Union[_Connectable, Iterable[_Connectable]]
+    ) -> SubGraph:
         origin = self.leaf_nodes or self.root_node
 
         if isinstance(origin, tuple):
             if len(origin) > 1:
                 raise NodesConnectionError(
-                    f'Forbidden to connect multiple Nodes {origin} into another {target}'
+                    f"Forbidden to connect multiple Nodes {origin} into another {target}"
                 )
             else:
                 origin = origin[0]
@@ -209,7 +217,9 @@ class _NodeConnector:
                     else:
                         target_leaf_nodes.append(d.root_node)
                 else:
-                    raise TypeError(f'Cannot connect to a {type(target)} target object.')
+                    raise TypeError(
+                        f"Cannot connect to a {type(target)} target object."
+                    )
         elif isinstance(target, Node):
             target_root_nodes = [target]
             target_leaf_nodes = [target]
@@ -217,7 +227,7 @@ class _NodeConnector:
             target_root_nodes = [target.root_node]
             target_leaf_nodes = target.leaf_nodes or [target.root_node]
         else:
-            raise TypeError(f'Cannot connect to a {type(target)} target object.')
+            raise TypeError(f"Cannot connect to a {type(target)} target object.")
 
         return target_root_nodes, target_leaf_nodes
 
@@ -232,10 +242,12 @@ class _NodeConnector:
         """
 
         if origin == target:
-            raise CyclicNodeError(f'Cannot connect a Node with itself: {origin}')
+            raise CyclicNodeError(f"Cannot connect a Node with itself: {origin}")
 
         if any(node == target for node in origin.outputs):
-            raise NodesAlreadyConnectedError(f'Node {origin} already connected to {target}')
+            raise NodesAlreadyConnectedError(
+                f"Node {origin} already connected to {target}"
+            )
 
         target.input = origin
         origin.outputs.append(target)

@@ -2,7 +2,9 @@ from data_etl.core.graph.algorithms import topological_sort
 from data_etl.core.graph.classes import Edge
 
 
-def test__topological_sort(node_a, node_b, node_c, node_d, node_e, node_f, node_g, node_h, node_i):
+def test__topological_sort(
+    node_a, node_b, node_c, node_d, node_e, node_f, node_g, node_h, node_i
+):
     node_a >> node_e >> node_f >> [node_g >> node_h >> node_b, node_d]
     # no need to assign to anything but just to avoid warning on newer python versions (>= 3.12)
     _ = node_e >> node_c
@@ -10,7 +12,17 @@ def test__topological_sort(node_a, node_b, node_c, node_d, node_e, node_f, node_
 
     nodes, edges = topological_sort(root_node=node_a)
 
-    assert nodes == [node_a, node_e, node_f, node_g, node_h, node_b, node_d, node_i, node_c]
+    assert nodes == [
+        node_a,
+        node_e,
+        node_f,
+        node_g,
+        node_h,
+        node_b,
+        node_d,
+        node_i,
+        node_c,
+    ]
     assert edges == [
         Edge(node_a, node_e),
         Edge(node_e, node_f),

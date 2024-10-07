@@ -8,7 +8,7 @@ def test__etl_01():
     test_case = TestCase()
 
     items = [0, 1, 2, 3, 4, 5]
-    expected_items = ['5', '6', '7', '8', '9', '10']
+    expected_items = ["5", "6", "7", "8", "9", "10"]
 
     ext = ListExtractor(items)
     tf = AdderToStr()
@@ -24,7 +24,7 @@ def test__etl_02():
     test_case = TestCase()
 
     items = [0, 1, 2, 3, 4, 5]
-    expected_items = ['5', '6', '7', '8', '9', '10']
+    expected_items = ["5", "6", "7", "8", "9", "10"]
 
     ext = ListExtractor(items)
     tf = AdderToStr()
@@ -42,7 +42,7 @@ def test__etl_03():
     test_case = TestCase()
 
     items = [0, 1, 2, 3, 4, 5]
-    expected_items = ['5', '6', '7', '8', '9', '10']
+    expected_items = ["5", "6", "7", "8", "9", "10"]
 
     ext = ListExtractor(items=items)
     tf = AdderToStr()
@@ -60,8 +60,8 @@ def test__etl_04():
     test_case = TestCase()
 
     items = [0, 1, 2, 3, 4, 5]
-    expected_items_1 = ['5', '6', '7', '8', '9', '10']
-    expected_items_2 = ['6', '7', '8', '9']
+    expected_items_1 = ["5", "6", "7", "8", "9", "10"]
+    expected_items_2 = ["6", "7", "8", "9"]
 
     ext = ListExtractor(items=items)
     tf = AdderToStr()
