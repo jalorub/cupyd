@@ -41,7 +41,4 @@ jobs:
           make test
       - name: run tox codestyle
         run: |
-          black . --check
-      - name: run tox type
-        run: |
-          tox -e type --recreate
+          make check-codestyle
