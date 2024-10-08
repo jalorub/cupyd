@@ -196,9 +196,7 @@ class NodeWorker(Thread):
     def _handle_exception(self, exception: Exception, action: str) -> None:
         if not self.stop_event:
             self.stop_event.set()
-        if (
-            not self.exception_found
-        ):  # don't replace original exception in case another one occurs
+        if not self.exception_found:  # don't replace original exception in case another one occurs
             self.exception_found = NodeException(exc=exception, action=action)
         self.skip_processing = True
 
@@ -402,7 +400,7 @@ class BulkerWorker(NodeWorker):
     @staticmethod
     def _chunk(items: List[Any], bulk_size: int) -> List[Any]:
         for i in range(0, len(items), bulk_size):
-            yield items[i : i + bulk_size]
+            yield items[i : i + bulk_size]  # noqa
 
 
 class DeBulkerWorker(NodeWorker):

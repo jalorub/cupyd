@@ -109,9 +109,7 @@ class ETL:
         workers_by_id = {}
 
         for segment_id, segment in segments_by_id.items():
-            active_worker_ids_by_segment_id[segment_id] = set(
-                segment.workers_by_id.keys()
-            )
+            active_worker_ids_by_segment_id[segment_id] = set(segment.workers_by_id.keys())
 
             for worker_id, worker in segment.workers_by_id.items():
                 workers_by_id[worker_id] = worker
@@ -243,20 +241,15 @@ class ETL:
         pause_event = InterProcessEventFlag()
         interruption_handler = InterruptionHandler(stop_event=stop_event)
         counter_by_node_id: Dict[str, MPCounter] = {
-            node.id: MPCounter()
-            for node in nodes
-            if isinstance(node, Loader) and not node.outputs
+            node.id: MPCounter() for node in nodes if isinstance(node, Loader) and not node.outputs
         }
         monitor_performance_event_by_node_id = {
-            node.id: InterProcessEventFlag(start_set=monitor_performance)
-            for node in nodes
+            node.id: InterProcessEventFlag(start_set=monitor_performance) for node in nodes
         }
         segments_by_id: Dict[str, ETLSegment] = {}
 
         for segment in segments:
-            worker_class = (
-                ETLWorkerThread if segment.run_in_main_process else ETLWorkerProcess
-            )
+            worker_class = ETLWorkerThread if segment.run_in_main_process else ETLWorkerProcess
 
             for _ in range(segment.num_workers):
                 etl_worker_id = f"etl_worker_{worker_num}"
@@ -265,9 +258,7 @@ class ETL:
                     worker_id=etl_worker_id,
                     segment_id=segment.id,
                     nodes=segment.nodes,
-                    counters=get_subdict(
-                        dictionary=counter_by_node_id, keys=segment.node_ids
-                    ),
+                    counters=get_subdict(dictionary=counter_by_node_id, keys=segment.node_ids),
                     input_connector_by_node_id=get_subdict(
                         dictionary=input_connector_by_node_id, keys=segment.node_ids
                     ),

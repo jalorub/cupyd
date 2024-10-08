@@ -34,7 +34,7 @@ class Adder(Transformer):
             return value + 1
 
     def finalize(self):
-        logger.info(f"Adder finalized!")
+        logger.info("Adder finalized!")
 
 
 class ListLoader(Loader):
@@ -93,9 +93,7 @@ def run_etl():
         verbose=True,
     )
 
-    logger.info(
-        f"Total items in ldr_a {len(ldr_a.items)} | total items ldr_b {len(ldr_b.items)}"
-    )
+    logger.info(f"Total items in ldr_a {len(ldr_a.items)} | total items ldr_b {len(ldr_b.items)}")
 
 
 if __name__ == "__main__":
