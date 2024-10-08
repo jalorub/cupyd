@@ -65,7 +65,7 @@ def compute_with_single_process():
 
     logger.info("Running README script without cupyd...")
 
-    for value in range(50_000):
+    for value in range(10_000):
         result = math.factorial(value)
         if result & 1:
             even_results.append(factorial)
@@ -77,7 +77,7 @@ def compute_with_single_process():
 
 if __name__ == "__main__":
     # 1. Instantiate the ETL Nodes
-    ext = IntegerExtractor(total_items=100)
+    ext = IntegerExtractor(total_items=10_000)
     factorial = Factorial()
     even_only = EvenOnly()
     odd_only = OddOnly()
