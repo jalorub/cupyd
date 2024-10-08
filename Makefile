@@ -1,5 +1,5 @@
 test:
-	pytest data_etl/tests/ -v -ra
+	pytest cupyd/tests/ -v -ra
 
 check-codestyle:
 	flake8 --max-line-length 100
