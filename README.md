@@ -27,7 +27,7 @@ Python framework to create your own ETLs.
 
 ## Usage
 
-In this example we will compute the factorial of 50.000 integers, using multiprocessing,
+In this example we will compute the factorial of 10.000 integers, using multiprocessing,
 while storing the results into 2 separate lists, one of even results and another for odd ones.
 
 ``` py title="basic_etl.py"
@@ -85,7 +85,7 @@ class ListLoader(Loader):
 
 if __name__ == "__main__":
     # 1. Define the ETL Nodes
-    ext = IntegerExtractor(total_items=50_000)
+    ext = IntegerExtractor(total_items=10_000)
     factorial = Factorial()
     even_only = EvenOnly()
     odd_only = OddOnly()
