@@ -1,7 +1,4 @@
 # cupyd
-
-- - -
-
                                                       __     
                                                      /\ \    
       ___       __  __      _____       __  __       \_\ \   
@@ -12,9 +9,7 @@
                               \ \_\         /\___/           
                                \/_/         \/__/
 
-- - -
 Python framework to create your own ETLs.
-- - -
 
 ## Features
 
