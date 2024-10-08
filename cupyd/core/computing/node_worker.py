@@ -315,7 +315,7 @@ class ProcessorWorker(NodeWorker):
                 bucket = self._process_bucket_function(bucket)
 
                 if start_time and bucket:
-                    timing = (perf_counter() - start_time)
+                    timing = (perf_counter() - start_time) / len(bucket)
 
             except Exception as e:
                 self._handle_exception(exception=e, action=PROCESS_BUCKET)

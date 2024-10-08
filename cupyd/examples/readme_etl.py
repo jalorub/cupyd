@@ -8,7 +8,8 @@ from typing import Any
 
 from cupyd import ETL, Extractor, Transformer, Loader, Filter
 
-logger = logging.getLogger('readme_etl')
+logger = logging.getLogger("readme_etl")
+
 
 class IntegerExtractor(Extractor):
 
@@ -62,7 +63,7 @@ def compute_with_single_process():
     even_results = []
     odd_results = []
 
-    logger.info('Running README script without cupyd...')
+    logger.info("Running README script without cupyd...")
 
     for value in range(50_000):
         result = math.factorial(value)
@@ -71,10 +72,11 @@ def compute_with_single_process():
         else:
             odd_results.append(factorial)
 
-    logger.info(f'Finished! Elapsed time: {time() - start_time} seconds')
+    logger.info(f"Finished! Elapsed time: {time() - start_time} seconds")
+
 
 if __name__ == "__main__":
-    # 1. Define the ETL Nodes
+    # 1. Instantiate the ETL Nodes
     ext = IntegerExtractor(total_items=100)
     factorial = Factorial()
     even_only = EvenOnly()
@@ -82,7 +84,7 @@ if __name__ == "__main__":
     even_ldr = ListLoader()
     odd_ldr = ListLoader()
 
-    # 2. Connect the Nodes to determine the data flow. Notice the ETL branches after the
+    # 2. Connect the Nodes to determine the data flow. Notice the two ETL branches after the
     # factorial is computed
     ext >> factorial >> [even_only >> even_ldr, odd_only >> odd_ldr]
 
@@ -96,4 +98,3 @@ if __name__ == "__main__":
 
     # Let's compare the performance with a single core, although without the cupyd overhead
     compute_with_single_process()
-
