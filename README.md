@@ -1,4 +1,10 @@
 # cupyd
+
+![PyPI - Version](https://img.shields.io/pypi/v/cupyd)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fjalorub%2Fcupyd%2Frefs%2Fheads%2Fmain%2Fpyproject.toml&style=flat-square)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/jalorub/cupyd/ci.yaml?style=flat-square)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/cupyd?style=flat-square&link=https%3A%2F%2Fpypistats.org%2Fpackages%2Fcupyd)
+
                                                       __     
                                                      /\ \    
       ___       __  __      _____       __  __       \_\ \   
@@ -21,18 +27,18 @@ Python framework to create your own ETLs.
     - Python >= 3.9
 - Lightweight:
     - No dependencies for its core version.
-    - API version will require [Falcon](https://falcon.readthedocs.io/en/stable/index.html), which
-      is a minimalist ASGI/WSGI framework that doesn't require other packages to work.
-    - The Dashboard (full) version will require Falcon and [Dash](https://dash.plotly.com/).
+    - [WIP] API version will require [Falcon](https://falcon.readthedocs.io/en/stable/index.html),
+      which is a minimalist ASGI/WSGI framework that doesn't require other packages to work.
+    - [WIP] The Dashboard (full) version will require Falcon and [Dash](https://dash.plotly.com/).
 
 ## Usage
 
-In this example we will compute the factorial of 10.000 integers, using multiprocessing,
-while storing the results into 2 separate lists, one of even results and another for odd ones.
+In this example we will compute the factorial of 20.000 integers, using multiprocessing,
+while storing the results into 2 separate lists, one for even values and another for odd values.
 
 ``` py title="basic_etl.py"
 import math
-from typing import Any
+from typing import Any, Iterator
 
 from cupyd import ETL, Extractor, Transformer, Loader, Filter
 
@@ -43,10 +49,10 @@ class IntegerExtractor(Extractor):
         super().__init__()
         self.total_items = total_items
 
-        # generated integers will be passed onto each worker in buckets of size 10
+        # generated integers will be passed to the workers in buckets of size 10
         self.configuration.bucket_size = 10
 
-    def extract(self) -> int:
+    def extract(self) -> Iterator[int]:
         for item in range(self.total_items):
             yield item
 
@@ -85,7 +91,7 @@ class ListLoader(Loader):
 
 if __name__ == "__main__":
     # 1. Define the ETL Nodes
-    ext = IntegerExtractor(total_items=10_000)
+    ext = IntegerExtractor(total_items=20_000)
     factorial = Factorial()
     even_only = EvenOnly()
     odd_only = OddOnly()

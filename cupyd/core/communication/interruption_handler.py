@@ -2,6 +2,7 @@ import ctypes
 import logging
 import signal
 from multiprocessing import Lock, Value
+from typing import Dict, Union, Callable, no_type_check
 
 from cupyd.core.communication.event_flag import InterProcessEventFlag
 
@@ -16,8 +17,9 @@ class InterruptionHandler:
         self._lock = Lock()
         self._stop_event = stop_event
         self._interrupted = Value(ctypes.c_bool, False)
-        self._original_signal_handlers = {}
+        self._original_signal_handlers: Dict[int, Union[Callable, int]] = {}
 
+    @no_type_check
     def start(self):
         self._original_signal_handlers[signal.SIGINT] = signal.signal(
             signal.SIGINT, self._handle_signal

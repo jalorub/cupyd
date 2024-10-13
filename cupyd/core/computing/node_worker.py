@@ -206,7 +206,7 @@ class ExtractorWorker(NodeWorker):
     def _run(self):
         self.node: Extractor
 
-        bucket = []
+        bucket: List[Any] = []
         stop_iteration = False
         start_time: Optional[float] = None
         bucket_size = self.node.configuration.bucket_size
@@ -347,6 +347,8 @@ class ProcessorWorker(NodeWorker):
 class BulkerWorker(NodeWorker):
 
     def _run(self):
+        self.node: Bulker
+
         bulk = []
         bulk_size = self.node.bulk_size  # TODO: allow changing bulk size dynamically?
 
@@ -398,7 +400,7 @@ class BulkerWorker(NodeWorker):
                 self._handle_exception(exception=e, action=PRODUCE_BUCKET)
 
     @staticmethod
-    def _chunk(items: List[Any], bulk_size: int) -> List[Any]:
+    def _chunk(items: List[Any], bulk_size: int) -> Iterator[List[Any]]:
         for i in range(0, len(items), bulk_size):
             yield items[i : i + bulk_size]  # noqa
 

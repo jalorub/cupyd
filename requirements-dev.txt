@@ -1,4 +1,6 @@
 pytest>=8,<9
-mkdocs-material>=9.4.0
 flake8>=7,<8
 black>=24,<25
+mypy>=1.11,<2
+pytest-cov
+flake8-pyproject

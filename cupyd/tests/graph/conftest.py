@@ -4,7 +4,7 @@ from cupyd.core.graph.classes import Node
 
 
 @fixture(scope="function", autouse=True)
-def node_a() -> Node:
+def node_a():
     node = Node()
     node.name = "A"
     yield node
@@ -63,11 +63,4 @@ def node_h():
 def node_i():
     node = Node()
     node.name = "i"
-    yield node
-
-
-@fixture(scope="function", autouse=True)
-def node_j():
-    node = Node()
-    node.name = "J"
     yield node

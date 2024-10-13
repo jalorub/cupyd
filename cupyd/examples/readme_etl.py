@@ -1,10 +1,10 @@
-"""In this example we will compute the factorial of 50.000 integers, using multiprocessing,
-while storing the results into 2 separate lists, one of even results and another for odd ones."""
+"""In this example we will compute the factorial of 20.000 integers, using multiprocessing,
+while storing the results into 2 separate lists, one for even values and another for odd values."""
 
 import math
 import logging
 from time import time
-from typing import Any
+from typing import Any, Iterator
 
 from cupyd import ETL, Extractor, Transformer, Loader, Filter
 
@@ -20,7 +20,7 @@ class IntegerExtractor(Extractor):
         # generated integers will be passed onto each worker in buckets of size 10
         self.configuration.bucket_size = 10
 
-    def extract(self) -> int:
+    def extract(self) -> Iterator[int]:
         for item in range(self.total_items):
             yield item
 
@@ -65,7 +65,7 @@ def compute_with_single_process():
 
     logger.info("Running README script without cupyd...")
 
-    for value in range(10_000):
+    for value in range(20_000):
         result = math.factorial(value)
         if result & 1:
             even_results.append(factorial)
@@ -77,7 +77,7 @@ def compute_with_single_process():
 
 if __name__ == "__main__":
     # 1. Instantiate the ETL Nodes
-    ext = IntegerExtractor(total_items=10_000)
+    ext = IntegerExtractor(total_items=20_000)
     factorial = Factorial()
     even_only = EvenOnly()
     odd_only = OddOnly()

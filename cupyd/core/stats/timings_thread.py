@@ -5,7 +5,7 @@ from multiprocessing import Queue
 from statistics import median
 from threading import Thread
 from time import time
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from cupyd.core.communication import InterProcessEventFlag
 from cupyd.core.constants.logging import LOGGING_MSG_PADDING
@@ -29,10 +29,12 @@ class TimingsThread(Thread):
         self.stop_event = stop_event
         self.refresh_interval = refresh_interval
         self.node_name_by_id = {node.id: node.name for node in nodes}
-        self.stats_by_node_id = {
+        self.stats_by_node_id: Dict[str, Dict[str, Optional[float]]] = {
             node.id: {"min": None, "max": None, "median": None} for node in nodes
         }
-        self.buffer_by_node_id = {node.id: deque(maxlen=100) for node in nodes}
+        self.buffer_by_node_id: Dict[str, deque[float]] = {
+            node.id: deque(maxlen=100) for node in nodes
+        }
 
     def run(self):
         last_log_time = time()
@@ -63,17 +65,16 @@ class TimingsThread(Thread):
     def _update_timings(self):
         for node_id, timings in self.buffer_by_node_id.items():
             if timings:
-                self.stats_by_node_id[node_id]["median"] = median(timings)
+                current_min: List[float] = []
+                current_max: List[float] = []
 
                 if self.stats_by_node_id[node_id]["min"]:
                     current_min = [self.stats_by_node_id[node_id]["min"]]
                     current_max = [self.stats_by_node_id[node_id]["max"]]
-                else:
-                    current_min = []
-                    current_max = []
 
                 self.stats_by_node_id[node_id]["min"] = min(chain(timings, current_min))
                 self.stats_by_node_id[node_id]["max"] = max(chain(timings, current_max))
+                self.stats_by_node_id[node_id]["median"] = median(timings)
 
     def _log_timings(self):
         log = "timings:\n"

@@ -12,8 +12,8 @@ from cupyd.core.nodes import Extractor, Transformer, Loader, Filter, Bulker, DeB
 
 
 def topological_sort(root_node: Node) -> Tuple[List[Node], List[Edge]]:
-    nodes = []
-    edges = []
+    nodes: List[Node] = []
+    edges: List[Edge] = []
 
     # if the graph contains cycles (not a DAG), it will fail when computing the topological sort.
     nodes, edges = _downstream_discovery(root_node, nodes, edges)
@@ -25,8 +25,8 @@ def assign_names_and_ids_to_nodes(nodes: List[Node]) -> None:
     """If a Node doesn't have a name provide it one using the class name with a numbered suffix."""
 
     node_id = 1
-    num_nodes_per_class = defaultdict(int)
-    last_num_per_class = defaultdict(int)
+    num_nodes_per_class: defaultdict[str, int] = defaultdict(int)
+    last_num_per_class: defaultdict[str, int] = defaultdict(int)
 
     for node in nodes:
         node.id = f"node_{node_id}"
@@ -52,7 +52,7 @@ def get_etl_segments(nodes: List[Node], num_workers: int) -> List[ETLSegment]:
 
     for group in _split_nodes_by_attr(nodes=nodes, attr_name="run_in_main_process"):
         for group_ in _split_nodes_if_not_consecutive(nodes=group):
-            run_in_main_process = group_[0].configuration.run_in_main_process
+            run_in_main_process = group_[0].configuration.run_in_main_process  # type: ignore
 
             if run_in_main_process or isinstance(group_[0], Extractor):
                 segment_num_workers = 1
@@ -194,8 +194,8 @@ def _split_nodes_if_not_consecutive(nodes: List[Node]) -> List[List[Node]]:
 
 
 def _get_node_attr(
-    node: typing.Union[Extractor, Transformer, Loader, Filter, Bulker, DeBulker],
+    node: typing.Union[Node, Extractor, Transformer, Loader, Filter, Bulker, DeBulker],
     attr_name: str,
     default: typing.Any = None,
 ):
-    return getattr(node.configuration, attr_name, default)
+    return getattr(node.configuration, attr_name, default)  # type: ignore

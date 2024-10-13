@@ -8,7 +8,7 @@ class TimingsBuffer:
     def __init__(self, maxsize: int = 25):
         super().__init__()
         self._maxsize = maxsize
-        self._queue = SimpleQueue()
+        self._queue: SimpleQueue = SimpleQueue()
         self._buffer_size = Value("i", 0)
 
     def produce_timing(self, timing: float):
