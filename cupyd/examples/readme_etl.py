@@ -4,7 +4,7 @@ while storing the results into 2 separate lists, one for even values and another
 import math
 import logging
 from time import time
-from typing import Any, Iterator
+from typing import Any, Iterator, Optional
 
 from cupyd import ETL, Extractor, Transformer, Loader, Filter
 
@@ -33,13 +33,13 @@ class Factorial(Transformer):
 
 class EvenOnly(Filter):
 
-    def filter(self, item: int) -> int | None:
+    def filter(self, item: int) -> Optional[int]:
         return item if item & 1 else None
 
 
 class OddOnly(Filter):
 
-    def filter(self, item: int) -> int | None:
+    def filter(self, item: int) -> Optional[int]:
         return None if item & 1 else item
 
 
