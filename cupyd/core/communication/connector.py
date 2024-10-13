@@ -1,10 +1,15 @@
+import logging
 import multiprocessing
 import queue
 from abc import abstractmethod
 from copy import deepcopy
 from typing import Optional, Any, List
 
+from _multiprocessing import SemLock
+
 from cupyd.core.constants.sentinel_values import NO_MORE_ITEMS
+
+logger = logging.getLogger("data_etl.connector")
 
 
 class Connector:
@@ -100,6 +105,14 @@ class InterProcessConnector(Connector):
 
     def __init__(self, maxsize: Optional[int] = 0):
         super().__init__(maxsize=maxsize)
+
+        if maxsize and maxsize > SemLock.SEM_VALUE_MAX:
+            logger.warning(
+                f"Limited maxsize for InterProcessConnector (Queue) since is bigger than OS limit: "
+                f"{maxsize} > {SemLock.SEM_VALUE_MAX}"
+            )
+            self._maxsize = SemLock.SEM_VALUE_MAX
+
         self._queue: Optional[multiprocessing.Queue] = None
 
     def start(self):
