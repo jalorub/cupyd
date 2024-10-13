@@ -225,9 +225,9 @@ class ETL:
 
             # TODO: allow customizing these max sizes when configuring the ETL/Nodes
             if origin_segment.id == target_segment.id:
-                connector = IntraProcessConnector(maxsize=0)
+                connector = IntraProcessConnector()
             else:
-                connector = InterProcessConnector(maxsize=0)
+                connector = InterProcessConnector()
                 connector.start()
 
             input_connector_by_node_id[target.id] = connector
@@ -240,7 +240,7 @@ class ETL:
 
         # 5. Create necessary structures & ETL Workers
         finished_workers: Queue[Tuple[str, str, Dict[str, NodeException]]] = Queue()
-        node_timings: Queue[Tuple[str, float]] = Queue(maxsize=100_000)
+        node_timings: Queue[Tuple[str, float]] = Queue(maxsize=25_000)
         stop_event = InterProcessEventFlag()
         pause_event = InterProcessEventFlag()
         interruption_handler = InterruptionHandler(stop_event=stop_event)
