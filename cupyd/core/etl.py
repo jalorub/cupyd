@@ -3,7 +3,7 @@ from collections import defaultdict
 from copy import deepcopy
 from multiprocessing import Queue, set_start_method, get_start_method
 from time import time
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union, Tuple, no_type_check
 
 from cupyd.core.communication.connector import (
     Connector,
@@ -221,11 +221,13 @@ class ETL:
                 if target.id in segment.node_ids:
                     target_segment = segment
 
+            connector: Union[IntraProcessConnector, InterProcessConnector]
+
             # TODO: allow customizing these max sizes when configuring the ETL/Nodes
             if origin_segment.id == target_segment.id:
-                connector = IntraProcessConnector(maxsize=0)
+                connector = IntraProcessConnector()
             else:
-                connector = InterProcessConnector(maxsize=0)
+                connector = InterProcessConnector()
                 connector.start()
 
             input_connector_by_node_id[target.id] = connector
@@ -237,9 +239,8 @@ class ETL:
                 )
 
         # 5. Create necessary structures & ETL Workers
-        worker_num = 1
-        finished_workers = Queue()
-        node_timings = Queue(maxsize=100_000)  # todo: might cause slowdowns, rethink?
+        finished_workers: Queue[Tuple[str, str, Dict[str, NodeException]]] = Queue()
+        node_timings: Queue[Tuple[str, float]] = Queue(maxsize=25_000)
         stop_event = InterProcessEventFlag()
         pause_event = InterProcessEventFlag()
         interruption_handler = InterruptionHandler(stop_event=stop_event)
@@ -250,13 +251,13 @@ class ETL:
             node.id: InterProcessEventFlag(start_set=monitor_performance) for node in nodes
         }
         segments_by_id: Dict[str, ETLSegment] = {}
+        etl_worker_num = 1
 
         for segment in segments:
             worker_class = ETLWorkerThread if segment.run_in_main_process else ETLWorkerProcess
 
             for _ in range(segment.num_workers):
-                etl_worker_id = f"etl_worker_{worker_num}"
-
+                etl_worker_id = f"etl_worker_{etl_worker_num}"
                 etl_worker = worker_class(
                     worker_id=etl_worker_id,
                     segment_id=segment.id,
@@ -278,8 +279,8 @@ class ETL:
                     node_timings=node_timings,
                     finished_workers=finished_workers,
                 )
-                segment.workers_by_id[etl_worker_id] = etl_worker
-                worker_num += 1
+                segment.workers_by_id[etl_worker_id] = etl_worker  # type: ignore
+                etl_worker_num += 1
 
             segments_by_id[segment.id] = segment
 
@@ -296,13 +297,14 @@ class ETL:
         )
 
     @staticmethod
-    def _setup_logger() -> [logging.Formatter, int, Optional[str]]:
+    @no_type_check
+    def _setup_logger() -> Tuple[Optional[logging.Formatter], Optional[int], Optional[str]]:
         """Update the current logger handler & backup the current logging configuration."""
 
         try:
             current_formatter = deepcopy(logging.root.handlers[0].formatter)
-        except Exception:
-            logger.warning("Unable to get current logger")
+        except Exception as e:
+            logger.warning(f"Unable to get current logger: {e}")
             return None, None, None
 
         current_level = logging.root.level

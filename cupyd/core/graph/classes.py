@@ -46,7 +46,7 @@ class Node(_Connectable):
         return str(self)
 
     @final
-    def __rshift__(self, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
+    def __rshift__(self, target: Union[_Connectable, List[_Connectable]]) -> SubGraph:
         return _NodeConnector.connect(origin=self, target=target)
 
     def start(self):
@@ -127,6 +127,8 @@ class Edge:
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Edge):
             return (self.origin == other.origin) and (self.target == other.target)
+        else:
+            raise TypeError(f"Comparison error between edge and {type(other)}")
 
     def __str__(self) -> str:
         return f"{self.origin} ⇒ {self.target}"
@@ -151,7 +153,7 @@ class SubGraph(_Connectable):
         self.root_node = root_node
         self.leaf_nodes = tuple(node for node in leaf_nodes) if leaf_nodes else ()
 
-    def __rshift__(self, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
+    def __rshift__(self, target: Union[_Connectable, List[_Connectable]]) -> SubGraph:
         origin = self.leaf_nodes or self.root_node
 
         if isinstance(origin, tuple):
@@ -170,7 +172,7 @@ class SubGraph(_Connectable):
 class _NodeConnector:
 
     @classmethod
-    def connect(cls, origin: Node, target: Union[_Connectable, Iterable[_Connectable]]) -> SubGraph:
+    def connect(cls, origin: Node, target: Union[_Connectable, List[_Connectable]]) -> SubGraph:
         """Connect a list of Nodes to one of the following Connectable:
 
         a) Another Node.
@@ -215,7 +217,7 @@ class _NodeConnector:
             target_leaf_nodes = [target]
         elif isinstance(target, SubGraph):
             target_root_nodes = [target.root_node]
-            target_leaf_nodes = target.leaf_nodes or [target.root_node]
+            target_leaf_nodes = list(target.leaf_nodes) or [target.root_node]
         else:
             raise TypeError(f"Cannot connect to a {type(target)} target object.")
 

@@ -1,10 +1,13 @@
 test:
-	pytest cupyd/tests/ -v -ra
+	pytest cupyd/tests/ -v -ra --cov=cupyd/core
 
 check-codestyle:
-	flake8 --max-line-length 100
-	black . --line-length 100 --check
+	flake8
+	black . --check
 
 style:
-	flake8 --max-line-length 100
-	black . --line-length 100
+	flake8
+	black .
+
+check-types:
+	mypy cupyd

@@ -3,7 +3,7 @@ from multiprocessing import Process
 from multiprocessing import Queue as MultiprocessingQueue
 from queue import Queue
 from threading import Thread
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Tuple
 
 from cupyd.core.communication import (
     Connector,
@@ -64,7 +64,7 @@ class ETLWorker:
             self.interruption_handler.start()
 
         thread_by_node_id: Dict[str, NodeWorker] = {}
-        finished_threads_queue = Queue()
+        finished_threads_queue: Queue[Tuple[str, NodeException]] = Queue()
 
         # start IntraProcessConnectors (InterProcessConnectors were started outside the ETLWorker)
         for connector in self.input_connector_by_node_id.values():
