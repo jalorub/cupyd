@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cupyd"
-dynamic = ["version"]
+version = "0.2.0"
 dependencies = []
 requires-python = ">=3.9"
 description = "Python framework to easily build ETLs."
