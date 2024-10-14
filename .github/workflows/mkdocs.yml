@@ -1,0 +1,62 @@
+name: MKDocs
+
+on:
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+  push:
+    branches:
+      - main
+    paths: # If pushed, only trigger the docs deployment if the relevant files have changed
+      - 'docs/**'
+      - 'pyproject.toml'
+      - 'CHANGELOG.md'
+      - 'mkdocs.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency: # ensure only one workflow at a time
+  group: "mkdocs"
+  cancel-in-progress: false
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.pages_url }}
+    steps:
+      - name: "Check out the repository"
+        uses: actions/checkout@v4
+
+      - name: "Set README.md as a MKDocs page"
+        run: cp "README.md" "./docs/index.md"
+
+      - name: "Set CHANGELOG.md as a MKDocs page"
+        run: cp "CHANGELOG.md" "./docs/changelog.md"
+
+      - name: "Set up Python 3.x"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # use the latest version.
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: "Install dependencies"
+        run: pip install -e .[docs]
+
+      - name: "Build Docs"
+        run: mkdocs build
+
+      - name: "Configure GitHub Pages"
+        uses: actions/configure-pages@v5
+
+      - name: "Upload artifact"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'site/' # MkDocs builds to site/ by default
+
+      - name: "Deploy to GitHub Pages"
+        id: deployment
+        uses: actions/deploy-pages@v4
