@@ -30,9 +30,6 @@ jobs:
       - name: "Check out the repository"
         uses: actions/checkout@v4
 
-      - name: "Set README.md as a MKDocs page"
-        run: cp "README.md" "./docs/index.md"
-
       - name: "Set CHANGELOG.md as a MKDocs page"
         run: cp "CHANGELOG.md" "./docs/changelog.md"
 
