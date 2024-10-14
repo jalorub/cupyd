@@ -9,7 +9,7 @@ from _multiprocessing import SemLock
 
 from cupyd.core.constants.sentinel_values import NO_MORE_ITEMS
 
-logger = logging.getLogger("data_etl.connector")
+logger = logging.getLogger("cupyd.connector")
 
 
 class Connector:

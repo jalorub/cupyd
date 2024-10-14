@@ -26,6 +26,9 @@ classifiers = [
     "Development Status :: 3 - Alpha",
 ]
 
+[project.optional-dependencies]
+docs = ["mkdocs-material"]
+
 [project.urls]
 Repository = "https://github.com/jalorub/cupyd.git"
 
