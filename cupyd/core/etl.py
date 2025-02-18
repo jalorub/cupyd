@@ -30,6 +30,10 @@ from cupyd.core.models.etl_segment import ETLSegment
 from cupyd.core.models.node_exception import NodeException
 from cupyd.core.nodes import Loader
 from cupyd.core.nodes.extractor import Extractor
+from cupyd.core.nodes.transformer import Transformer
+from cupyd.core.nodes.filter import Filter
+from cupyd.core.nodes.bulker import Bulker
+from cupyd.core.nodes.debulker import DeBulker
 from cupyd.core.stats.progress_thread import ProgressThread
 from cupyd.core.stats.timings_thread import TimingsThread
 from cupyd.core.utils import format_seconds, get_subdict
@@ -51,6 +55,7 @@ class ETL:
         raise_exception_if_interrupted: bool = True,
         monitor_performance: bool = False,
         show_progress: bool = True,
+        progress_refresh_interval: float = 2.5,
         verbose: bool = True,
     ):
         start_method = get_start_method()
@@ -94,6 +99,7 @@ class ETL:
                 counter_by_node_id=counter_by_node_id,
                 stop_event=stop_event,
                 finalize_event=finalize_event,
+                refresh_interval=progress_refresh_interval,
             )
             progress_thread.start()
         else:
@@ -223,11 +229,15 @@ class ETL:
 
             connector: Union[IntraProcessConnector, InterProcessConnector]
 
-            # TODO: allow customizing these max sizes when configuring the ETL/Nodes
-            if origin_segment.id == target_segment.id:
-                connector = IntraProcessConnector()
+            if isinstance(target, (Transformer, Loader, Filter, Bulker, DeBulker)):
+                queue_max_size = target.configuration.queue_max_size
             else:
-                connector = InterProcessConnector()
+                raise AttributeError('No "queue_max_size" attr in connected Node!')
+
+            if origin_segment.id == target_segment.id:
+                connector = IntraProcessConnector(maxsize=queue_max_size)
+            else:
+                connector = InterProcessConnector(maxsize=queue_max_size)
                 connector.start()
 
             input_connector_by_node_id[target.id] = connector

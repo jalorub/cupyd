@@ -23,12 +23,12 @@ class ProgressThread(Thread):
         counter_by_node_id: Dict[str, MPCounter],
         finalize_event: IntraProcessEventFlag,
         stop_event: InterProcessEventFlag,
-        refresh_interval: float = 2.5,  # seconds
+        refresh_interval: float,  # seconds
     ):
         super().__init__(name="cupyd (progress)")
         self.finalize_event = finalize_event
         self.stop_event = stop_event
-        self.refresh_interval = refresh_interval
+        self.refresh_interval = refresh_interval or 2.5
         self.counter_by_node_name = {}
         self.start_time: Optional[float] = None
 
