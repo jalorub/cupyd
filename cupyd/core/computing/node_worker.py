@@ -169,7 +169,7 @@ class NodeWorker(Thread):
         # todo: could this be determined beforehand? should be possible, at build() step
         self.output_connectors = _set_copy_bucket_on_produce(self.output_connectors)
 
-        if not isinstance(self.node, Bulker) and not isinstance(self.node, DeBulker):
+        if not isinstance(self.node, (Bulker, DeBulker)):
             try:
                 self.node.start()
             except Exception as exc:
@@ -178,7 +178,7 @@ class NodeWorker(Thread):
         if not self.exception_found:
             self._run()
 
-        if not isinstance(self.node, Bulker) and not isinstance(self.node, DeBulker):
+        if not isinstance(self.node, (Bulker, DeBulker)):
             try:
                 if self.exception_found:
                     self.node.handle_exception(self.exception_found)

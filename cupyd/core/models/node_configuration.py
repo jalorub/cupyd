@@ -1,12 +1,16 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 
-DEFAULT_QUEUE_MAX_SIZE = 10_000
+# max number of items that can be stored in a bucket
+DEFAULT_BUCKET_SIZE = 100
+
+# max number of buckets that can be stored in a queue
+DEFAULT_QUEUE_MAX_SIZE = 500
 
 
 @dataclass
 class ExtractorConfiguration:
-    bucket_size: int = 1000
+    bucket_size: int = DEFAULT_BUCKET_SIZE
     run_in_main_process: bool = True
 
 
