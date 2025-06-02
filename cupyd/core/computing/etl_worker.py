@@ -58,9 +58,8 @@ class ETLWorker:
         self.finished_workers = finished_workers
 
     def run(self):
-        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT, force=True)
-
         if isinstance(self, ETLWorkerProcess):
+            logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT, force=True)
             self.interruption_handler.start()
 
         thread_by_node_id: Dict[str, NodeWorker] = {}
